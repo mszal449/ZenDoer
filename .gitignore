@@ -1,0 +1,16 @@
+.*
+!.gitignore
+!.pre-commit-config.yaml
+
+*~
+.*~
+*.bak
+
+*.pyc
+*__pycache__*
+*egg-info*
+
+*.log
+*.sqlite*
+*.csv
+*.zip
