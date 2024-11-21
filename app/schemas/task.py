@@ -19,14 +19,14 @@ class TaskSchema(BaseSchema):
 
     @field_validator("end_time")
     def end_time_after_start_time(cls, end_time, values):
-        start_time = values.get("start_time")
+        start_time = values.data.get("start_time")
         if start_time and end_time <= start_time:
             raise ValueError("end_time must be after start_time")
         return end_time
 
     @field_validator("time_left")
     def time_left_less_than_duration_time(cls, time_left, values):
-        duration_time = values.get("duration_time")
+        duration_time = values.data.get("duration_time")
         if duration_time and time_left > duration_time:
             raise ValueError("time_left must be less than or equal to duration_time")
         return time_left
