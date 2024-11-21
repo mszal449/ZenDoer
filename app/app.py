@@ -1,7 +1,8 @@
 from typing import Type
 
 from customtkinter import CTk
-from views import FocusView
+
+from .views import FocusView
 
 
 class App(CTk):

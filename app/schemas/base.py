@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class BaseSchema(BaseModel):
@@ -6,5 +6,4 @@ class BaseSchema(BaseModel):
     Shared base schema with common configurations.
     """
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
