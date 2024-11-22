@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from .models import Subtask, Task
+from app.models import Subtask, Task
 
 DATABASE_URL = "sqlite:///local_database.db"
 

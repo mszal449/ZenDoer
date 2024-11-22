@@ -1,4 +1,4 @@
 from .subtask import Subtask
 from .task import Task
 
-__all__ = ["Task", "Subtask"]
+__all__ = ["Subtask", "Task"]

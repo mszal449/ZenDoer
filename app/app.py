@@ -1,18 +1,33 @@
 from typing import Type
 
-from customtkinter import CTk
+import customtkinter
 
-from .views import FocusView
+from app.db import init_db
+from app.views import FocusView
 
 
-class App(CTk):
+class App(customtkinter.CTk):
+
     def __init__(self):
-
         super().__init__()
+
+        customtkinter.set_appearance_mode("System")
+        customtkinter.set_default_color_theme("blue")
+
         self.title("ZenDoer")
         self.geometry("800x600")
         self.view = None
         self.set_view(FocusView)
+
+    """
+        This method starts main loop of application and initializes db connection.
+
+    """
+
+    def start(self):
+        init_db()
+
+        self.mainloop()
 
     """
         This method sets the current view of the application.
