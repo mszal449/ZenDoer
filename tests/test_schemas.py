@@ -67,7 +67,6 @@ def test_valid_subtask():
         description="A subtask description",
         status=Status.NOT_STARTED,
     )
-    print(f"!!!!!!!!!!!!!!!! Subtask status: {subtask.status.name}, Expected status: {Status.NOT_STARTED}")
     assert subtask.name == "Subtask 1"
     assert subtask.description == "A subtask description"
     assert subtask.status.value == Status.NOT_STARTED
