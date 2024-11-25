@@ -1,16 +1,17 @@
 from datetime import timedelta
+from tkinter import PhotoImage
 
-from customtkinter import CTkButton, CTkFrame, CTkLabel
+from customtkinter import CTkButton, CTkFrame, CTkImage, CTkLabel
+from PIL import Image
 
 
 class TaskCard(CTkFrame):
-    text_color = "#b5b5b5"
+    text_color = "#d4d2d2"
 
     def __init__(self, task, master=None, **kwargs):
         super().__init__(master, **kwargs)
         self.task = task
-        self.configure(corner_radius=10, fg_color="#2b2b2b")
-        # self.grid_columnconfigure()
+        self.configure(corner_radius=5, fg_color="#3b3b3b")
         self.create_widgets()
 
     def create_widgets(self):
@@ -21,8 +22,8 @@ class TaskCard(CTkFrame):
         # Task Name
         name_label = CTkLabel(
             self,
-            text=f"{self.task.id}  {self.task.name}",
-            font=("Arial", 14),
+            text=f"{self.task.name}",
+            font=("Arial", 16),
             anchor="w",
             text_color=self.text_color,
         )
@@ -48,14 +49,16 @@ class TaskCard(CTkFrame):
         )
         time_left_label.grid(row=1, column=1, sticky="e", padx=10, pady=2)
 
-        # Button or Icon Area
+        img = CTkImage(Image.open("app/static/start_button.png"))
+
         action_button = CTkButton(
             self,
-            text="Start",
-            width=80,
-            height=30,
-            corner_radius=8,
-            fg_color="#1f6aa5",
-            text_color=self.text_color,
+            image=img,
+            text="",
+            width=20,
+            height=20,
+            fg_color="#25d3a2",
+            hover_color="#9de8ca",
+            cursor="hand2",
         )
         action_button.grid(row=0, column=1, padx=10, pady=(10, 5), sticky="e")

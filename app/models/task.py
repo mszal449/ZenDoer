@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -12,6 +12,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
+    done = Column(Boolean, nullable=False, default=False)
     duration_time = Column(Integer, nullable=False)  # Duration in seconds
     time_left = Column(Integer, nullable=False)  # Time left in seconds
     start_time = Column(DateTime, nullable=False, default=datetime.utcnow)

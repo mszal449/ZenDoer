@@ -12,6 +12,7 @@ class TaskSchema(BaseSchema):
     description: str
     duration_time: int = Field(..., gt=0, description="Duration in seconds")
     time_left: int = Field(..., ge=0, description="Time left in seconds")
+    done: bool = False
     start_time: datetime
     end_time: datetime
 
