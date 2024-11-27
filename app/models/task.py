@@ -1,33 +1,81 @@
+from __future__ import annotations
+
+import sqlite3
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import List, Optional
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
-from sqlalchemy.orm import relationship
-
-from .base import Base
+from .subtask import Subtask
 
 
-class Task(Base):
-    __tablename__ = "tasks"
+@dataclass
+class Task:
+    id: int | None
+    name: str
+    description: str
+    done: bool = False
+    duration_time: int = 0
+    time_left: int = 0
+    start_time: datetime = field(default_factory=datetime.now)
+    end_time: datetime = field(default_factory=datetime.now)
+    subtasks: list[Subtask] = field(default_factory=list)
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    done = Column(Boolean, nullable=False, default=False)
-    duration_time = Column(Integer, nullable=False)  # Duration in seconds
-    time_left = Column(Integer, nullable=False)  # Time left in seconds
-    start_time = Column(DateTime, nullable=False, default=datetime.utcnow)
-    end_time = Column(DateTime, nullable=False)
-
-    # Relationship to Subtasks
-    subtasks = relationship(
-        "Subtask",
-        back_populates="task",
-        cascade="all, delete-orphan",
-    )
-
-    def __repr__(self):
-        return (
-            f"<Task(id={self.id}, name={self.name}, description={self.description}, "
-            f"duration_time={self.duration_time}, time_left={self.time_left}, "
-            f"start_time={self.start_time}, end_time={self.end_time})>"
+    @staticmethod
+    def create_table(conn: sqlite3.Connection):
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                done BOOLEAN NOT NULL DEFAULT 0,
+                duration_time INTEGER NOT NULL,
+                time_left INTEGER NOT NULL,
+                start_time TEXT NOT NULL,
+                end_time TEXT NOT NULL
+            )
+        """,
         )
+        conn.commit()
+
+    def save(self, conn: sqlite3.Connection):
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO tasks (name, description, done, duration_time, time_left, start_time, end_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+            (
+                self.name,
+                self.description,
+                int(self.done),
+                self.duration_time,
+                self.time_left,
+                self.start_time.isoformat(),
+                self.end_time.isoformat(),
+            ),
+        )
+        self.id = cursor.lastrowid
+        conn.commit()
+
+    @staticmethod
+    def get_all(conn: sqlite3.Connection) -> list[Task]:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tasks")
+        rows = cursor.fetchall()
+        tasks = []
+        for row in rows:
+            tasks.append(
+                Task(
+                    id=row[0],
+                    name=row[1],
+                    description=row[2],
+                    done=bool(row[3]),
+                    duration_time=row[4],
+                    time_left=row[5],
+                    start_time=datetime.fromisoformat(row[6]),
+                    end_time=datetime.fromisoformat(row[7]),
+                ),
+            )
+        return tasks

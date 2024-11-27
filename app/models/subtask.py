@@ -1,31 +1,64 @@
-import enum
-
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
-
-from .base import Base
+import sqlite3
+from dataclasses import dataclass
+from typing import List, Optional
 
 
-class Status(enum.Enum):
-    NOT_STARTED = "not started"
-    IN_PROGRESS = "in progress"
-    COMPLETED = "completed"
+@dataclass
+class Subtask:
+    id: Optional[int]
+    task_id: int
+    name: str
+    description: str
+    status: str = "not started"
 
-
-class Subtask(Base):
-    __tablename__ = "subtasks"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    status: Column[Status] = Column(Enum(Status), default=Status.NOT_STARTED, nullable=False)
-
-    # Relationship back to Task
-    task = relationship("Task", back_populates="subtasks")
-
-    def __repr__(self):
-        return (
-            f"<Subtask(id={self.id}, task_id={self.task_id}, name={self.name}, "
-            f"description={self.description}, status={self.status})>"
+    @staticmethod
+    def create_table(conn: sqlite3.Connection):
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS subtasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                task_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                status TEXT NOT NULL,
+                FOREIGN KEY(task_id) REFERENCES tasks(id)
+            )
+        """,
         )
+        conn.commit()
+
+    def save(self, conn: sqlite3.Connection):
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO subtasks (task_id, name, description, status)
+            VALUES (?, ?, ?, ?)
+        """,
+            (
+                self.task_id,
+                self.name,
+                self.description,
+                self.status,
+            ),
+        )
+        self.id = cursor.lastrowid
+        conn.commit()
+
+    @staticmethod
+    def get_by_task(conn: sqlite3.Connection, task_id: int) -> List["Subtask"]:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM subtasks WHERE task_id = ?", (task_id,))
+        rows = cursor.fetchall()
+        subtasks = []
+        for row in rows:
+            subtasks.append(
+                Subtask(
+                    id=row[0],
+                    task_id=row[1],
+                    name=row[2],
+                    description=row[3],
+                    status=row[4],
+                ),
+            )
+        return subtasks

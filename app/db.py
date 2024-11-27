@@ -1,19 +1,8 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+import sqlite3
 
-from app.models import Subtask, Task
-
-DATABASE_URL = "sqlite:///local_database.db"
-
-engine = create_engine(DATABASE_URL, echo=True)
-
-# Define a base class for models
-Base = declarative_base()
-
-# Create a session
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+DATABASE_URL = "local_database.db"
 
 
-# Initialize the database
-def init_db():
-    Base.metadata.create_all(bind=engine)
+def get_connection() -> sqlite3.Connection:
+    conn = sqlite3.connect(DATABASE_URL)
+    return conn

@@ -1,5 +1,4 @@
 from datetime import timedelta
-from tkinter import PhotoImage
 
 from customtkinter import CTkButton, CTkFrame, CTkImage, CTkLabel
 from PIL import Image
@@ -8,11 +7,12 @@ from PIL import Image
 class TaskCard(CTkFrame):
     text_color = "#d4d2d2"
 
-    def __init__(self, task, master=None, **kwargs):
+    def __init__(self, task, master=None, button_action=None, **kwargs):
         super().__init__(master, **kwargs)
         self.task = task
         self.configure(corner_radius=5, fg_color="#3b3b3b")
         self.create_widgets()
+        self.button_action = button_action
 
     def create_widgets(self):
         # Set grid configurations for proper spacing
@@ -60,5 +60,6 @@ class TaskCard(CTkFrame):
             fg_color="#25d3a2",
             hover_color="#9de8ca",
             cursor="hand2",
+            command=lambda: self.button_action(self.task.id) if self.button_action else None,
         )
         action_button.grid(row=0, column=1, padx=10, pady=(10, 5), sticky="e")
